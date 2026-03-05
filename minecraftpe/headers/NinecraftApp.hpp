@@ -1,7 +1,7 @@
 #pragma once
 #include <Minecraft.hpp>
 #include <vector>
-
+#include <mutex>
 struct NinecraftApp : Minecraft{
 	static std::shared_ptr<TextureAtlas> _itemsTextureAtlas;
 	static std::shared_ptr<TextureAtlas> _terrainTextureAtlas;
@@ -12,9 +12,8 @@ struct NinecraftApp : Minecraft{
 	int32_t field_D4C;
 	int32_t field_D50;
 	std::vector<bool> some_std_vec;
-	int32_t field_D60, field_D64;
-	int32_t field_D68; //TODO mutex?
-	int8_t field_D6C, field_D6D, field_D6E, field_D6F;
+	int32_t field_D64; //TODO might be a part of some_std_vec
+	std::unique_lock<std::mutex> field_D68;
 
 	NinecraftApp();
 	std::shared_ptr<TextureAtlas> getTextureAtlas(TextureAtlasId);

@@ -39,9 +39,7 @@ NinecraftApp::NinecraftApp(){
 	this->field_D48___ = 1;
 	this->field_D4C = 0;
 	this->field_D50 = 0;
-	this->field_D60 = 0;
 	this->field_D64 = 0;
-	this->field_D68 = 0;
 	//TODO bsd_signal(13);
 }
 
@@ -133,8 +131,14 @@ void NinecraftApp::onAppResumed(void){
 	Minecraft::onAppResumed();
 }
 void NinecraftApp::update(void){
-	//TODO mutex lock
-	//TODO multitouch
+	//this->field_D68.lock(); //TODO std::__ndk1::system_error: unique_lock::lock: references null mutex: Operation not permitted
+	if(!this->some_std_vec.empty()){
+		for(int v2 = 0; v2 < this->some_std_vec.size(); ++v2){
+			this->handleBackNoReturn();
+		}
+		this->some_std_vec.clear(); //TODO check
+	}
+	//this->field_D68.unlock(); //TODO should have if(v5.field_4)
 	++this->field_D4C;
 	Multitouch::commit();
 	Minecraft::update();
@@ -156,18 +160,19 @@ void NinecraftApp::update(void){
 bool_t NinecraftApp::handleBack(bool_t a2){
 	if(!this->field_CF4){
 		if(this->level){
-			if(!this->currentScreen){
-				this->pauseGame(1);
-				return 0;
-			}
-			if(!this->currentScreen->handleBackEvent(0)){
-				if(this->player->currentContainer){
-					this->player->closeContainer();
-				}else{
-					this->setScreen(0);
+			if(!a2) {
+				if(!this->currentScreen) {
+					this->pauseGame(1);
+					return 0;
+				}
+				if(!this->currentScreen->handleBackEvent(0)) {
+					if(this->player->currentContainer) {
+						this->player->closeContainer();
+					} else {
+						this->setScreen(0);
+					}
 				}
 			}
-
 		}else{
 			if(this->currentScreen){
 				this->currentScreen->handleBackEvent(a2);
@@ -177,7 +182,7 @@ bool_t NinecraftApp::handleBack(bool_t a2){
 	return 1;
 }
 void NinecraftApp::handleBack(void){
-	//TODO
+	this->some_std_vec.push_back(1); //TODO check
 }
 void NinecraftApp::init(void){
 	const char* v43[] = {"/games", "/com.mojang", "/minecraftpe"};

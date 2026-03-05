@@ -20,7 +20,7 @@ struct App : AppPlatform::Listener{
 	virtual void audioEngineOff(void);
 	virtual void destroy(void);
 	virtual void loadState(void*, int32_t);
-	virtual void saveState(void**, int32_t*);
+	virtual bool saveState(void**, int32_t*);
 	virtual bool_t useTouchscreen(void);
 	virtual void setTextboxText(const std::string&);
 	virtual void draw(void);

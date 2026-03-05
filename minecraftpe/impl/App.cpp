@@ -10,7 +10,9 @@ void App::audioEngineOn(void){}
 void App::audioEngineOff(void){}
 void App::destroy(void){}
 void App::loadState(void*, int32_t){}
-void App::saveState(void**, int32_t*){}
+bool App::saveState(void**, int32_t*){
+	return 0;
+}
 bool_t App::useTouchscreen(void){
 	return 1;
 }

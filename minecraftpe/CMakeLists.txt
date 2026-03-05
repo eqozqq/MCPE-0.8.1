@@ -19,13 +19,13 @@ endif()
 
 find_package(ZLIB REQUIRED)
 
-
+add_compile_options(-fpermissive -Wno-out-of-line-declaration -Wno-write-strings -Werror=infinite-recursion -Werror=return-type)
 if(ANDROID)
-	add_compile_options(-fpermissive -Wno-out-of-line-declaration -Wno-write-strings -Werror=infinite-recursion -Werror=return-type -DUSEGLES -DIMTOOLAZYTOFIX16ERRS -DPCTWEAKS)
+	add_compile_options(-DUSEGLES -DIMTOOLAZYTOFIX16ERRS -DPCTWEAKS)
 	#fix crash in CThread::~CThread when launching on newer(android 9) devices and targeting sdk 36
 	add_compile_options(-DEVILOREOBROKEPTHREADS)
 else()
-	add_compile_options(-fpermissive -Wno-out-of-line-declaration -Wno-write-strings -Werror=infinite-recursion -Werror=return-type -DIMTOOLAZYTOFIX16ERRS -DPCTWEAKS)
+	add_compile_options(-DIMTOOLAZYTOFIX16ERRS -DPCTWEAKS)
 endif()
 
 if(DEBUG)
@@ -42,7 +42,7 @@ if(ANDROID)
 
 	add_library(minecraftpe SHARED ${IMPLCPP} ${IMPLC} ${HEADC} ${HEADCPP})
 	target_include_directories(minecraftpe PUBLIC "headers/" ${ANDROID_NDK}/sources/android/native_app_glue/)
-	target_link_libraries(minecraftpe ZLIB::ZLIB EGL GLESv1_CM RakNetLibStatic native_app_glue jsoncpp_lib utf8proc log native_app_glue android)
+	target_link_libraries(minecraftpe ZLIB::ZLIB EGL GLESv1_CM RakNetStatic native_app_glue jsoncpp_lib utf8proc log native_app_glue android)
 else()
 	add_executable(minecraftpe08decomp ${IMPLCPP} ${IMPLC} ${HEADC} ${HEADCPP})
 

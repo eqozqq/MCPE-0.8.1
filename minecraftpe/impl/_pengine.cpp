@@ -13,7 +13,7 @@
 void engine_handle_cmd(android_app* a1, int a2) {
 	std::string v26 = "???";
 	ENGINE* engine = (ENGINE*)a1->userData;
-
+	DEBUGMSG("cmd: %d", a2);
 	switch(a2) {
 		case APP_CMD_INIT_WINDOW:
 			if(engine->state->window) {
@@ -91,14 +91,16 @@ void engine_handle_cmd(android_app* a1, int a2) {
 			engine->field_1C = 1;
 			break;
 		case APP_CMD_SAVE_STATE:
-			void* savedState;
-			int savedStateSize;
-			engine->minecraft->saveState(&savedState, &savedStateSize);
-			if(savedStateSize > 0) {
-				a1->savedStateSize = savedStateSize;
-				a1->savedState = savedState;
+			{
+				void* savedState = 0;
+				int savedStateSize = 0;
+				engine->minecraft->saveState(&savedState, &savedStateSize);
+				if(savedStateSize > 0) {
+					a1->savedStateSize = savedStateSize;
+					a1->savedState = savedState;
+				}
+				break;
 			}
-			break;
 		default:
 			break;
 	}
