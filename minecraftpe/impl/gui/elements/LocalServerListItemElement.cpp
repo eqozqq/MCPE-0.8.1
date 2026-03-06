@@ -20,6 +20,7 @@
 #include <util/Util.hpp>
 #include <util/ParameterStringify.hpp>
 #include <level/LevelSettings.hpp>
+#include <ExternalServer.hpp>
 
 LocalServerListItemElement::LocalServerListItemElement(Minecraft* a2, ExternalServer a3, bool_t editing, PlayScreen* a5)
 	: GuiElement(1, 1, 0, 0, 24, 24) {

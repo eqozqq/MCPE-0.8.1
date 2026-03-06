@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utils.h>
 #include <ExternalServerFile.hpp>
+#include <ExternalServer.hpp>
 #include <network/RakNetInstance.hpp>
 #include <network/mco/MojangConnector.hpp>
 #include <gui/screens/CreateWorldScreen.hpp>

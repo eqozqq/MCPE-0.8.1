@@ -12,8 +12,8 @@ struct AddPlayerPacket : Packet{
 	int32_t eid;
 	float x, y, z, pitch, yaw;
 	int16_t itemId, itemAuxValue;
-	std::vector<DataItem*> field_40;
-	const struct SynchedEntityData* data;
+	std::vector<DataItem*> entityData;
+	const struct SynchedEntityData* dataToSend;
 	AddPlayerPacket();
 	AddPlayerPacket(const Player*);
 

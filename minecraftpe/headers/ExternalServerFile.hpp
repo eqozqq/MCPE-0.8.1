@@ -2,8 +2,8 @@
 #include <_types.h>
 #include <string>
 #include <unordered_map>
-#include <ExternalServer.hpp>
 
+struct ExternalServer;
 struct ExternalServerFile
 {
 	std::unordered_map<int32_t, ExternalServer> field_0;

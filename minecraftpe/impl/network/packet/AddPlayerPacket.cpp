@@ -8,7 +8,7 @@
 #include <inventory/Inventory.hpp>
 #include <network/NetEventCallback.hpp>
 AddPlayerPacket::AddPlayerPacket() {
-	this->data = 0;
+	this->dataToSend = 0;
 }
 AddPlayerPacket::AddPlayerPacket(const Player* a2) {
 	this->clientId = a2->rakNetGUID;
@@ -21,7 +21,7 @@ AddPlayerPacket::AddPlayerPacket(const Player* a2) {
 	this->yaw = a2->yaw;
 	this->itemId = 0;
 	this->itemAuxValue = 0;
-	this->data = a2->getEntityData();
+	this->dataToSend = a2->getEntityData();
 	this->username = RakNet::RakString::NonVariadic(a2->username.data());
 	ItemInstance* sel = a2->inventory->getSelected();
 	if(sel) {
@@ -31,9 +31,9 @@ AddPlayerPacket::AddPlayerPacket(const Player* a2) {
 }
 
 AddPlayerPacket::~AddPlayerPacket() {
-	for(int32_t i = 0; i < this->field_40.size(); ++i) {
-		if(this->field_40[i]) {
-			delete this->field_40[i];
+	for(int32_t i = 0; i < this->entityData.size(); ++i) {
+		if(this->entityData[i]) {
+			delete this->entityData[i];
 		}
 	}
 }
@@ -51,7 +51,7 @@ void AddPlayerPacket::write(RakNet::BitStream* stream) {
 	stream->Write<int16_t>(this->itemAuxValue);
 	RakDataOutput v7;
 	v7.bitStream = stream;
-	this->data->packAll(&v7);
+	this->dataToSend->packAll(&v7);
 }
 void AddPlayerPacket::read(RakNet::BitStream* stream) {
 	stream->Read<RakNet::RakNetGUID>(this->clientId); //TODO check
@@ -67,7 +67,7 @@ void AddPlayerPacket::read(RakNet::BitStream* stream) {
 	stream->Read<int16_t>(this->itemAuxValue);
 	RakDataInput v7;
 	v7.stream = stream;
-	this->field_40 = SynchedEntityData::unpack(&v7);
+	this->entityData = SynchedEntityData::unpack(&v7);
 	this->yaw = PacketUtil::Rot_degreesToChar(yaw); //XXX possible mcpe bug here
 	this->pitch = PacketUtil::Rot_charToDegrees(pitch);
 

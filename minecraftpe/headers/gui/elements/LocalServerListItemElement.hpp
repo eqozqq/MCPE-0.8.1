@@ -1,7 +1,6 @@
 #pragma once
 #include <gui/GuiElement.hpp>
 #include <RakString.h>
-#include <ExternalServer.hpp>
 
 struct PlayScreen;
 struct Minecraft;
@@ -10,6 +9,7 @@ struct PingedCompatibleServer;
 
 struct ImageWithBackground;
 struct Button;
+struct ExternalServer;
 struct LocalServerListItemElement: GuiElement
 {
 	float field_24, field_28;

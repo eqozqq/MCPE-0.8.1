@@ -2,6 +2,7 @@
 #include <sstream>
 #include <string.h>
 #include <vector>
+#include <ExternalServer.hpp>
 
 ExternalServerFile::ExternalServerFile(const std::string& a2) {
 	this->fileName = a2 + "/external_servers.txt";

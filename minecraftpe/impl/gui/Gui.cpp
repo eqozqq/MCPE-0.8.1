@@ -359,7 +359,6 @@ void Gui::postError(int32_t a2) {
 		this->addMessage("error", v11.str(), 200);
 	}
 }
-#include <rendering/LevelRenderer.hpp>
 
 void Gui::render(float a2, bool_t a3, int32_t a4, int32_t a5) {
 	Minecraft* minecraftInst; // r3

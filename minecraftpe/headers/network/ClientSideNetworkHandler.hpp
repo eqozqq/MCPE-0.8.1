@@ -12,17 +12,17 @@ struct ClientSideNetworkHandler: NetEventCallback
 {
 	Minecraft* minecraft;
 	MultiPlayerLevel* level;
-	IRakNetInstance* field_C;
-	RakNet::RakPeer* field_10;
+	IRakNetInstance* rakNetInstance;
+	RakNet::RakPeer* rakPeer;
 	int8_t field_14, field_15, field_16, field_17;
 	RakNet::RakNetGUID field_18;
 	int8_t field_24, field_25, field_26, field_27;
 	std::vector<SBufferedBlockUpdate> field_28;
 	int32_t loadedChunks;
-	int32_t field_38;
-	int32_t requestedChunksMaybe;
-	IntPair field_40[256];
-	bool_t chunksLoadedMaybe[256];
+	int32_t timeToSet;
+	int32_t requestedChunks;
+	IntPair chunksToSend[256];
+	bool chunksLoaded[256];
 	bool_t _isRealmsServer;
 	int8_t field_941, field_942, field_943, field_944, field_945, field_946, field_947;
 
@@ -30,7 +30,7 @@ struct ClientSideNetworkHandler: NetEventCallback
 	bool_t areAllChunksLoaded();
 	void arrangeRequestChunkOrder();
 	void clearChunksLoaded();
-	bool_t isChunkLoaded(int32_t, int32_t);
+	bool isChunkLoaded(int32_t, int32_t);
 	bool_t isRealmsServer();
 	void requestNextChunk();
 	void setRealmsServer();

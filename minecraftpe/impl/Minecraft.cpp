@@ -1,5 +1,6 @@
 #include <Minecraft.hpp>
 #include <ExternalServerFile.hpp>
+#include <ExternalServer.hpp>
 #include <cpputils.hpp>
 #include <entity/LocalPlayer.hpp>
 #include <entity/player/User.hpp>

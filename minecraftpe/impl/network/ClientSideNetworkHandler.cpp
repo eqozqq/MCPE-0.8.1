@@ -77,12 +77,12 @@
 ClientSideNetworkHandler::ClientSideNetworkHandler(Minecraft* a2, IRakNetInstance* a3) {
 	this->minecraft = a2;
 	this->level = 0;
-	this->field_C = a3;
+	this->rakNetInstance = a3;
 	this->loadedChunks = 0;
-	this->field_38 = 0;
-	this->requestedChunksMaybe = 0;
+	this->timeToSet = 0;
+	this->requestedChunks = 0;
 	this->_isRealmsServer = 0;
-	this->field_10 = a3->getPeer();
+	this->rakPeer = a3->getPeer();
 }
 bool_t ClientSideNetworkHandler::areAllChunksLoaded() {
 	return this->loadedChunks > 255;
@@ -112,41 +112,36 @@ void ClientSideNetworkHandler::arrangeRequestChunkOrder() {
 	//TODO uses std::sort(or something else) but it doesnt want to compile (no match for 'operator+'(operand type is 'IntPair'))
 
 	_ihatecppstdevenmore = _ChunkSorter{cx, cz};
-	qsort(this->field_40, 256, sizeof(*this->field_40), _ihatecppstd);
+	qsort(this->chunksToSend, 256, sizeof(*this->chunksToSend), _ihatecppstd);
 }
 void ClientSideNetworkHandler::clearChunksLoaded() {
-	int32_t v1;					  // r3
-	ClientSideNetworkHandler* v2; // r2
-
-	v1 = 0;
-	v2 = this;
-	for(v1 = 0; v1 != 256; ++v1) {
-		this->field_40[v1].x = v1 >> 4;
-		this->field_40[v1].y = v1 & 0xf;
-		this->chunksLoadedMaybe[v1] = 0;
+	for(int v1 = 0; v1 != 256; ++v1) {
+		this->chunksToSend[v1].x = v1 >> 4;
+		this->chunksToSend[v1].y = v1 & 0xf;
+		this->chunksLoaded[v1] = 0;
 	}
 }
-bool_t ClientSideNetworkHandler::isChunkLoaded(int32_t a2, int32_t a3) {
-	return (uint32_t)a2 > 0xF || a3 < 0 || a3 > 15 || this->chunksLoadedMaybe[16 * a2 + a3];
+bool ClientSideNetworkHandler::isChunkLoaded(int32_t x, int32_t z) {
+	return (uint32_t)x > 0xF || z < 0 || z > 15 || this->chunksLoaded[16 * x + z];
 }
 bool_t ClientSideNetworkHandler::isRealmsServer() {
 	return this->_isRealmsServer;
 }
 void ClientSideNetworkHandler::requestNextChunk() {
-	int32_t requestedChunksMaybe; // r3
+	int32_t requestedChunks; // r3
 	IntPair* v3;				  // r2
 	int32_t x;					  // r7
 	int32_t y;					  // r6
 	IRakNetInstance* v6;		  // r0
 
-	requestedChunksMaybe = this->requestedChunksMaybe;
-	if(requestedChunksMaybe <= 255) {
-		v3 = &this->field_40[requestedChunksMaybe];
+	requestedChunks = this->requestedChunks;
+	if(requestedChunks <= 255) {
+		v3 = &this->chunksToSend[requestedChunks];
 		x = v3->x;
 		y = v3->y;
 		RequestChunkPacket v7(x, y);
-		this->field_C->send(v7);
-		++this->requestedChunksMaybe;
+		this->rakNetInstance->send(v7);
+		++this->requestedChunks;
 		++this->loadedChunks;
 	}
 }
@@ -160,7 +155,7 @@ void ClientSideNetworkHandler::levelGenerated(Level* a2) {
 	LevelData* LevelData;	// r0
 
 	this->level = (MultiPlayerLevel*)a2;
-	v4 = this->field_38;
+	v4 = this->timeToSet;
 	if(v4) {
 		a2->setTime(v4);
 	}
@@ -170,7 +165,7 @@ void ClientSideNetworkHandler::levelGenerated(Level* a2) {
 		}
 	}
 	ReadyPacket v9(1);
-	this->field_C->send(v9);
+	this->rakNetInstance->send(v9);
 	this->arrangeRequestChunkOrder();
 	this->requestNextChunk();
 }
@@ -178,11 +173,11 @@ ClientSideNetworkHandler::~ClientSideNetworkHandler() {
 }
 void ClientSideNetworkHandler::onConnect(const RakNet::RakNetGUID& a2) {
 	a2.ToString();
-	this->field_10->GetMyGUID().ToString();
+	this->rakPeer->GetMyGUID().ToString();
 	this->field_18 = a2;
 	this->clearChunksLoaded();
 	LoginPacket v10(this->minecraft->user->username, this->minecraft->field_C5C, *this->minecraft->mojangConnector->getJoinMCOPayload());
-	this->field_C->send(v10);
+	this->rakNetInstance->send(v10);
 }
 void ClientSideNetworkHandler::onUnableToConnect() {
 	this->minecraft->setScreen(new DisconnectionScreen("Unable to connect to world."));
@@ -217,9 +212,8 @@ void ClientSideNetworkHandler::handle(const RakNet::RakNetGUID&, struct LoginSta
 		if(a3->status == 2) {
 			this->minecraft->setScreen(new DisconnectionScreen("Could not connect: Outdated server!"));
 		}
-
 	} else {
-		this->field_C->setIsLoggedIn(1);
+		this->rakNetInstance->setIsLoggedIn(1);
 	}
 }
 void ClientSideNetworkHandler::handle(const RakNet::RakNetGUID&, struct SetTimePacket* a3) {
@@ -227,20 +221,18 @@ void ClientSideNetworkHandler::handle(const RakNet::RakNetGUID&, struct SetTimeP
 		this->level->setTime(a3->timeValue);
 		this->level->setDayCycleActive(a3->stopTime);
 	} else {
-		this->field_38 = a3->timeValue;
+		this->timeToSet = a3->timeValue;
 	}
 }
 void ClientSideNetworkHandler::handle(const RakNet::RakNetGUID&, struct MessagePacket* a3) {
 	this->minecraft->gui.addMessage(a3->source.C_String(), a3->message.C_String(), 200);
 }
 void ClientSideNetworkHandler::handle(const RakNet::RakNetGUID& a2, struct StartGamePacket* pk) {
-	LevelStorageSource* levelSource; // r4
-	LevelStorage* v6;				 // r4
 	MultiPlayerLevel* v8;			 // r8
 	LocalPlayer* player;			 // r7
 	Minecraft* minecraft;			 // r4
 
-	levelSource = this->minecraft->getLevelSource();
+	LevelStorageSource* levelSource = this->minecraft->getLevelSource();
 	levelSource->deleteLevel(LevelStorageSource::TempLevelId);
 	if(this->_isRealmsServer) {
 		LevelData v14;
@@ -248,11 +240,11 @@ void ClientSideNetworkHandler::handle(const RakNet::RakNetGUID& a2, struct Start
 		v14.setSeed(pk->seed);
 		levelSource->loadFromCache(&v14, LevelStorageSource::TempLevelId);
 	}
-	v6 = levelSource->selectLevel(LevelStorageSource::TempLevelId, 1);
-	v8 = new MultiPlayerLevel(v6, "temp", LevelSettings{pk->seed, pk->gamemode != 0}, 1, pk->genver, 0);
-	player = new LocalPlayer(this->minecraft, (Level*)v8, this->minecraft->user, v8->dimensionPtr->id, pk->gamemode == 1);
 
-	player->rakNetGUID = this->field_10->GetMyGUID();
+	v8 = new MultiPlayerLevel(levelSource->selectLevel(LevelStorageSource::TempLevelId, 1), "temp", LevelSettings{pk->seed, pk->gamemode != 0}, 1, pk->genver, 0);
+	player = new LocalPlayer(this->minecraft, v8, this->minecraft->user, v8->dimensionPtr->id, pk->gamemode == 1);
+
+	player->rakNetGUID = this->rakPeer->GetMyGUID();
 	player->entityId = pk->eid;
 	player->inventoryMenu.setListener(player);
 	player->moveTo(pk->x, pk->y, pk->z, player->yaw, player->pitch);
@@ -323,16 +315,10 @@ LABEL_10:
 	}
 }
 void ClientSideNetworkHandler::handle(const RakNet::RakNetGUID& a2, struct AddMobPacket* a3) {
-	Level* level; // r1
-	int32_t type; // r0
-	Mob* mob;	  // r0
-	int32_t v11;  // r2
-
-	level = this->level;
-	if(level) {
-		type = a3->type;
+	if(this->level) {
+		int type = a3->type;
 		if(type) {
-			mob = MobFactory::CreateMob(type, level);
+			Mob* mob = MobFactory::CreateMob(type, this->level);
 			if(mob) {
 				mob->entityId = a3->eid;
 				mob->moveTo(a3->x, a3->y, a3->z, a3->pitch, a3->yaw);
@@ -353,7 +339,7 @@ void ClientSideNetworkHandler::handle(const RakNet::RakNetGUID&, struct AddPlaye
 		p->moveTo(pk->x, pk->y, pk->z, pk->yaw, pk->pitch);
 		p->username = pk->username.C_String();
 		p->rakNetGUID = pk->clientId;
-		p->getEntityData()->assignValues(&pk->field_40);
+		p->getEntityData()->assignValues(&pk->entityData);
 		if(pk->itemId) {
 			ItemInstance v10(pk->itemId, 1, pk->itemAuxValue);
 			p->inventory->replaceSlot(9, &v10);
@@ -492,13 +478,13 @@ void ClientSideNetworkHandler::handle(const RakNet::RakNetGUID&, struct ChunkDat
 								pk->stream.Read(metas, 8);
 								int x = xw + xc;
 								int z = zw + zc;
-								int yc = 0;
-								do {
+
+								for(int yc = 0; yc != 16; ++yc){
 									int y = yc + ymc;
-									int id = (uint8_t)ids[yc++];
+									int id = (uint8_t)ids[yc];
 									int valid = Tile::transformToValidBlockId(id, x, y, z);
 									this->level->setTileNoUpdate(x, y, z, valid);
-								} while(yc != 16);
+								}
 
 								for(int i = 0; i < 8; ++i) { //XXX inlined into 2int assign?
 									chunk->tileMeta.data[((ymc + (((index & 0xF) << 11) | (index >> 4 << 7))) >> 1) + i] = metas[i];
@@ -541,10 +527,10 @@ void ClientSideNetworkHandler::handle(const RakNet::RakNetGUID&, struct ChunkDat
 				}
 
 				chunk->unsaved = 0;
-				this->chunksLoadedMaybe[16 * pk->xPos + pk->zPos] = 1;
+				this->chunksLoaded[16 * pk->xPos + pk->zPos] = 1;
 				if(this->areAllChunksLoaded()) {
 					ReadyPacket v47(2);
-					this->field_C->send(v47);
+					this->rakNetInstance->send(v47);
 					for(uint32_t v23 = 0; v23 < this->field_28.size(); ++v23) {
 						SBufferedBlockUpdate* v25 = &this->field_28[v23];
 						int v26 = Tile::transformToValidBlockId(v25->id, v25->x, v25->y, v25->z);
@@ -568,7 +554,7 @@ void ClientSideNetworkHandler::handle(const RakNet::RakNetGUID&, struct PlayerEq
 		if(ent) {
 			if(ent->isPlayer()) {
 				Player* v7 = (Player*)ent;
-				if(v7->rakNetGUID == this->field_10->GetMyGUID()) {
+				if(v7->rakNetGUID == this->rakPeer->GetMyGUID()) {
 					puts("Attempted to modify local player's inventory");
 				} else {
 					if(a3->itemID) {
@@ -600,7 +586,7 @@ void ClientSideNetworkHandler::handle(const RakNet::RakNetGUID&, struct PlayerAr
 			if(ent->isPlayer()) {
 				Player* v7 = (Player*)ent;
 				;
-				if(v7->rakNetGUID == this->field_10->GetMyGUID()) {
+				if(v7->rakNetGUID == this->rakPeer->GetMyGUID()) {
 					puts("Attempted to modify local player's armor visually");
 				} else {
 					_D663005E(v7, a3->headId, 0);
