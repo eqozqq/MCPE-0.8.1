@@ -265,6 +265,7 @@ void ServerSideNetworkHandler::onDisconnect(const RakNet::RakNetGUID& a2) {
 				std::string v9 = v6->username + " disconnected from the game";
 				this->displayGameMessage("server", v9);
 				((ServerPlayer*)v6)->disconnect();
+				v6->field_108 = 1;
 				this->level->getLevelStorage()->save(v6);
 				this->level->removeEntity(v6);
 				break;
