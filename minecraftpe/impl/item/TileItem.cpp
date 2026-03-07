@@ -61,6 +61,7 @@ bool_t TileItem::useOn(ItemInstance* item, Player* player, Level* level, int32_t
 	if(!item->count || !level->mayPlace(this->blockID, x, yNew, zNew, 0, sideNew)) {
 		return 0;
 	}
+
 	v20 = Tile::tiles[this->blockID];
 	auxValue = item->getAuxValue();
 	meta = this->getLevelDataForAuxValue(auxValue);

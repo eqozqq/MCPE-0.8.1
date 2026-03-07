@@ -74,5 +74,6 @@ JNIEXPORT void JNICALL Java_com_mojang_minecraftpe_MainActivity_nativeUnregister
 JNIEXPORT void JNICALL Java_com_mojang_minecraftpe_MainActivity_nativeWebRequestCompleted(JNIEnv* env, jobject dis, jint a2, jlong a3, jint a4, jstring a5){
     __android_log_write(ANDROID_LOG_ERROR, "MCPE081DECOMP", "Java_com_mojang_minecraftpe_MainActivity_nativeWebRequestCompleted - not implemented");
 }
+
 }
 #endif

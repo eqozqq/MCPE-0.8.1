@@ -23,9 +23,9 @@ void BaseContainerMenu::broadcastChanges() {
 		std::vector<ItemInstance> v13 = this->getItems();
 		if(v13.size() == this->field_C.size()) {
 			for(int32_t i = 0; i < v13.size(); ++i) {
-				if(!ItemInstance::matchesNulls(&this->field_C[i], &v13[i])) {
+				if(!ItemInstance::matches(&this->field_C[i], &v13[i])) {
 					this->field_C[i] = v13[i];
-					this->isResultSlot(i);
+					this->containerListener->slotChanged(this, i, this->field_C[i], this->isResultSlot(i));
 				}
 			}
 		} else {

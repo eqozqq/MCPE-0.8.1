@@ -222,7 +222,6 @@ bool_t ItemEntity::isInWater() {
 }
 void ItemEntity::playerTouch(Player* a2) {
 	int32_t count; // r7
-
 	if(!this->level->isClientMaybe) {
 		count = this->itemInstance.count;
 		if(!this->delayBeforePickup && a2->isAlive()) {

@@ -112,7 +112,9 @@ bool_t GameMode::useItemOn(Player* player, Level* level, ItemInstance* a4, int32
 	int32_t bid = level->getTile(x, y, z);
 	if(bid == Tile::invisible_bedrock->blockID) return 0;
 	if(bid > 0 && Tile::tiles[bid]->use(level, x, y, z, player)) return 1;
-	if(!ItemInstance::isItem(sel)) return 0;
+	if(!ItemInstance::isItem(sel)) {
+		return 0;
+	}
 	if(!this->isCreativeType()) return sel->useOn(player, level, x, y, z, face, faceX, faceY, faceZ);
 	int32_t aux = sel->getAuxValue();
 	int32_t count = sel->count;
