@@ -14,7 +14,7 @@ struct LevelChunk
 	int8_t field_9, field_A, field_B;
 	struct Level* level;
 	DataLayer tileMeta, skyLight, blockLight;
-	int8_t heightMap[256];
+	uint8_t heightMap[256];
 	int8_t updateMap[256];
 	int32_t topBlockY;
 	int32_t chunkX, chunkZ;
