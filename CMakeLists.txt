@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.16)
 
+if(ANDROID)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
+ENDIF()
+
 project(minecraftpe08decomp)
 set (CMAKE_CXX_STANDARD 11)
 include_directories(stb)
