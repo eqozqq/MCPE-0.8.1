@@ -2,12 +2,27 @@
 #include <util/ThreadCollection.hpp>
 #include <network/mco/LoginInformation.hpp>
 #include <Minecraft.hpp>
+#include <network/mco/MCOParser.hpp>
+#include <network/RestService.hpp>
+#include <util/Common.hpp>
+#include <network/mco/MCOPayloadPacker.hpp>
+#include <oaes_lib.h>
+#include <string.h>
+#include <util/Base64.hpp>
 
 MojangConnector::MojangConnector(Minecraft* minecraft) {
+	this->serverCreationEnabled = 0;
 	this->serviceEnabled = 0;
-	this->status = STATUS_0;
+	this->random = std::shared_ptr<Random>(new Random());
+	this->loginInformation = std::make_shared<LoginInformation>(minecraft->platform()->getLoginInformation());
+	this->minecraft = minecraft;
 	this->threadCollection = std::shared_ptr<ThreadCollection>(new ThreadCollection(4));
-	printf("MojangConnector::MojangConnector - not implemented\n"); //TODO
+	this->mcoParser = std::shared_ptr<MCOParser>(new MCOParser());
+	this->accountService = std::shared_ptr<RestService>(new RestService("https://authserver.mojang.com"));
+	this->mcoService = std::shared_ptr<RestService>(new RestService("https://peoapi.minecraft.net"));
+	this->gameVersionNet = Common::getGameVersionStringNet();
+	this->mcoService->setCookieData("version", this->gameVersionNet);
+	this->status = STATUS_0;
 }
 
 void MojangConnector::clearLoginInformation() {
@@ -19,9 +34,18 @@ std::shared_ptr<RestService> MojangConnector::getAccountSercice() {
 MojangConnectionStatus MojangConnector::getConnectionStatus() {
 	return this->status;
 }
-std::string MojangConnector::getEncryptedJoinDataString(int64_t, const std::string&, const std::string&) {
-	printf("MojangConnector::getEncryptedJoinDataString - not implemented\n"); //TODO
-	return "";
+std::string MojangConnector::getEncryptedJoinDataString(long long a3, const std::string& a4, const std::string& a5) {
+	MCOPayloadPacker v7(*this->random);
+	std::string v8 = v7.writeBitStream(a3, a4);
+	OAES_CTX* ctx = oaes_alloc();
+	oaes_set_option(ctx, OAES_OPTION_ECB, 0);
+	oaes_key_import_data(ctx, (const uint8_t*)a5.c_str(), a5.size());
+	char v12[512];
+	memset(v12, 0, sizeof(v12));
+	size_t v10 = 512;
+	oaes_encrypt(ctx, (const uint8_t*)v8.c_str(), v8.size(), (uint8_t*)v12, &v10);
+	std::string v11(&v12[32], v10 - 32);
+	return Base64::base64Encode(v11);
 }
 std::string* MojangConnector::getJoinMCOPayload() {
 	return &this->joinMCOPayload;

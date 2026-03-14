@@ -437,7 +437,11 @@ void Minecraft::init(void) {
 bool_t Minecraft::isCreativeMode(void) {
 	return this->isCreative;
 }
-bool_t Minecraft::isKindleFire(int32_t) {
+bool_t Minecraft::isKindleFire(int32_t a2) {
+	if(a2 != 1) return 0;
+
+	std::string v12 = this->platform()->getPlatformStringVar(0);
+	//does something with v12, converts stuff into lowercase and does stuff with "kindle" and "fire"
 	printf("Minecraft::isKindleFire - not implemented\n");
 	return 0;
 }

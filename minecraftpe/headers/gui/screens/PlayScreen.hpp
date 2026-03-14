@@ -11,11 +11,12 @@
 #include <network/mco/RestRequestJob.hpp>
 #include <gui/screens/PlayScreenStateSetting.hpp>
 #include <gui/screens/PlayScreenState.hpp>
+#include <unordered_map>
 
 struct PlayScreen: Screen
 {
 	int8_t field_50, field_51, field_52, field_53;
-	int32_t field_54, field_58;
+	std::shared_ptr<std::unordered_map<long long, MCOServerListItem>> field_54;
 	std::string field_5C;
 	Touch::THeader* header;
 	Touch::TButton* backButton;

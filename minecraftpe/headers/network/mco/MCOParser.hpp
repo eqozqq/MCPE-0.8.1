@@ -7,7 +7,7 @@ struct MCOServerListItem;
 struct LoginInformation;
 struct MCOParser
 {
-	//TODO check does it have any fields?
+	//TODO check does it have any fields? - seems to be 1 byte
 
 	void parseErrorMessage(const std::string&, std::string&, int32_t&);
 	void parseJoinWorld(const std::string&, std::string&, uint16_t&, std::string&);

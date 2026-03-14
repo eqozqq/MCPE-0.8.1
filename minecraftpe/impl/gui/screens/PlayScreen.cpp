@@ -21,8 +21,6 @@ PlayScreen::PlayScreen(bool_t a2) {
 	PlayScreenState v4 = a2 ? PlayScreenState::ELEVEN : PlayScreenState::ZERO;
 	this->field_50 = 0;
 	this->field_51 = 0;
-	this->field_54 = 0;
-	this->field_58 = 0;
 	this->header = 0;
 	this->backButton = 0;
 	this->field_5C = "";
@@ -101,9 +99,14 @@ std::shared_ptr<GuiElement> PlayScreen::buildLocalServerList() { //TODO returns 
 	return this->field_1F4;
 }
 std::shared_ptr<GuiElement> PlayScreen::buildMCOServerList() {
+	if(!this->field_1FC) {
+		this->field_1FC = std::shared_ptr<PackedScrollContainer>(new PackedScrollContainer(0, 0, 0));
+	}
+	std::shared_ptr<PackedScrollContainer> v23 = std::dynamic_pointer_cast<PackedScrollContainer>(this->field_1FC);
+	v23->clearAll();
 	//TODO
 	printf("PlayScreen::buildMCOServerList - not implemented\n");
-	return std::shared_ptr<GuiElement>();
+	return this->field_1FC;
 }
 std::shared_ptr<GuiElement> PlayScreen::buildMessageScreen() {
 	//TODO check

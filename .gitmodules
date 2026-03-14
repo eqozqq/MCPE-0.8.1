@@ -13,3 +13,6 @@
 [submodule "RakNet"]
 	path = RakNet
 	url = https://github.com/oldminecraftcommunity/RakNet
+[submodule "OpenAES"]
+	path = OpenAES
+	url = https://github.com/oldminecraftcommunity/OpenAES

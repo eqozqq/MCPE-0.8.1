@@ -8,6 +8,7 @@ project(minecraftpe08decomp)
 set (CMAKE_CXX_STANDARD 11)
 include_directories(stb)
 include_directories(glm)
+include_directories(OpenAES/inc/)
 include_directories(RakNet/Source/)
 
 # i love python
@@ -24,4 +25,5 @@ include_directories(utf8proc)
 
 add_subdirectory(RakNet)
 add_subdirectory(utf8proc)
+add_subdirectory(OpenAES)
 add_subdirectory(minecraftpe)

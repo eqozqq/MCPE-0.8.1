@@ -43,3 +43,4 @@ cmake .. -DJSONCPP_WITH_TESTS=OFF -DJSONCPP_WITH_POST_BUILD_UNITTEST=OFF -DCMAKE
 * GZIP stuff - zlib 1.2.3, based on https://zlib.net/zpipe.c
 * https://github.com/nothings/stb/
 * GLM - commit before https://github.com/g-truc/glm/commit/2b747cbbadfd3af39b443e88902f1c98bd231083 and -DGLM_FORCE_RADIANS <?>
+* OpenAES - used for realms stuff

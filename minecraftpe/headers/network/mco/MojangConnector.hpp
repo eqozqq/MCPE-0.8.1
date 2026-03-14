@@ -18,7 +18,7 @@ struct MojangConnector{
 	std::shared_ptr<RestService> mcoService;
 	std::shared_ptr<ThreadCollection> threadCollection;
 	std::shared_ptr<LoginInformation> loginInformation;
-	std::string field_20;
+	std::string gameVersionNet;
 	MojangConnectionStatus status;
 	std::shared_ptr<MCOParser> mcoParser;
 	Minecraft* minecraft;
@@ -35,7 +35,7 @@ struct MojangConnector{
 	void clearLoginInformation();
 	std::shared_ptr<RestService> getAccountSercice();
 	MojangConnectionStatus getConnectionStatus();
-	std::string getEncryptedJoinDataString(int64_t, const std::string&, const std::string&);
+	std::string getEncryptedJoinDataString(long long, const std::string&, const std::string&);
 	std::string* getJoinMCOPayload();
 	std::shared_ptr<LoginInformation> getLoginInformation();
 	std::shared_ptr<MCOParser> getMCOParser();

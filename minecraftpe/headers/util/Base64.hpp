@@ -2,7 +2,9 @@
 #include <_types.h>
 #include <string>
 
-
+// mojang copied the answer from
+// https://stackoverflow.com/questions/5288076/base64-encoding-and-decoding-with-openssl
+// and slightly changed function names?
 struct Base64
 {
 	static char_t reverse_table[128];

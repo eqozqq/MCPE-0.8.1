@@ -61,9 +61,6 @@ void ExternalServerFile::load() {
 						this->field_0.insert({v6, ExternalServer(v6, v8, v9, v7)}); //TODO check
 					}
 				}
-
-				printf("ExternalServerFile::load - not implemented\n");
-				//TODO
 			}
 		}
 
