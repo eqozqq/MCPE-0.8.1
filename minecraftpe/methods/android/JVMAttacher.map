@@ -1,2 +1,0 @@
-JVMAttacher(_JavaVM *)
-forceDetach(void)

@@ -51,6 +51,11 @@
 #include <rendering/EntityRenderDispatcher.hpp>
 #include <cpputils.hpp>
 #include <network/mco/LoginInformation.hpp>
+#include <network/mco/MCOStringify.hpp>
+#include <util/Common.hpp>
+#include <network/mco/RestRequestJob.hpp>
+#include <util/Util.hpp>
+#include <network/mco/MCOParser.hpp>
 
 char_t* Minecraft::progressMessages[] = {"Locating server", "Building terrain", "Preparing", "Saving chunks", "Waiting for Minecraft Realms"};
 
@@ -64,7 +69,6 @@ Minecraft::Minecraft()
 	this->field_18 = 0;
 	this->field_28 = 0;
 	this->field_2C = 0;
-	this->field_30 = 0;
 	this->field_34 = 0;
 	//TODO settings and stuff
 	this->field_16C = 0;
@@ -436,7 +440,22 @@ void Minecraft::init(void) {
 	this->mojangConnector = std::shared_ptr<MojangConnector>(new MojangConnector(this));
 	std::shared_ptr<LoginInformation> v20 = this->mojangConnector->getLoginInformation();
 	if(v20->accessToken != "") {
-		printf("Minecraft::init - initialize MCO(for realms) - not implemented\n"); //TODO
+		std::string v18 = MCOStringify::stringifyRefresh(v20->accessToken, v20->clientId, v20->profileId, Common::getGameVersionStringNet());
+		std::shared_ptr<RestRequestJob> v21 = RestRequestJob::CreateJob(RRT_1, this->mojangConnector->getAccountSercice(), this);
+		this->field_30 = Util::simpleFormat("/refresh", {});
+		v21->setBody(v18);
+		//something weird happens with v21 here
+		RestRequestJob::launchRequest(
+			v21,
+			this->mojangConnector->getThreadCollection(),
+			[this](int32_t a2, const std::string& a3, const RestCallTagData& a4, std::shared_ptr<RestRequestJob> v11){
+				LoginInformation v14 = this->mojangConnector->getMCOParser()->parseMCOAccountValidSessionReturnValue(a3);
+				this->mojangConnector->setLoginInformation(v14);
+				this->platform()->statsTrackData("login", "{\"new_registration\": false, \"automatic_login\": true}");
+			},
+			[this](bool a2, bool a3, int32_t a4, const std::string& a5, const RestCallTagData&, std::shared_ptr<RestRequestJob> v9){
+			}
+		);
 	}
 }
 bool_t Minecraft::isCreativeMode(void) {

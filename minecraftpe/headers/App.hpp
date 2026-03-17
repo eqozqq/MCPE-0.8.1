@@ -9,7 +9,9 @@ struct App : AppPlatform::Listener{
 	char field_2, field_3;
 	AppContext context;
 	int8_t field_18, field_19, field_1A, field_1B;
-	int32_t field_1C, field_20, field_24, field_28, field_2C, field_30, field_34;
+	int32_t field_1C, field_20, field_24, field_28, field_2C;
+	std::string field_30;
+	int field_34;
 
 	void init(AppContext&);
 

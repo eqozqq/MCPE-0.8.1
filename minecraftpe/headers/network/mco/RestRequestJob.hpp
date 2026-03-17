@@ -20,7 +20,7 @@ struct RestRequestJob: Job
 	std::string field_30;
 	std::string body;
 	std::shared_ptr<RestService> field_38;
-	int32_t field_40;
+	RestRequestType field_40;
 	RakNet::RakNetGUID field_44;
 	std::string field_4C;
 

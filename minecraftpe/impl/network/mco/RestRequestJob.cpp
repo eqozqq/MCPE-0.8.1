@@ -4,9 +4,16 @@
 #include <time.h>
 #include <util/Util.hpp>
 
-std::shared_ptr<RestRequestJob> RestRequestJob::CreateJob(RestRequestType, std::shared_ptr<RestService>, Minecraft*) {
-	printf("RestRequestJob::CreateJob - not implemented\n"); //TODO
+std::shared_ptr<RestRequestJob> RestRequestJob::CreateJob(RestRequestType a2, std::shared_ptr<RestService> a3, Minecraft* a4) {
+#ifdef ANDROID
+	DEBUGMSG("RestRequestJob::CreateJob(android not implemented\n");
 	return std::shared_ptr<RestRequestJob>();
+#else
+	std::shared_ptr<RestRequestJob> ret(new RestRequestJob());
+	ret->field_38 = a3;
+	ret->field_40 = a2;
+	return ret;
+#endif
 }
 
 RestRequestJob::RestRequestJob(){
@@ -15,8 +22,10 @@ RestRequestJob::RestRequestJob(){
 	this->field_C = 0;
 	this->status = JS_0;
 }
-void RestRequestJob::launchRequest(std::shared_ptr<RestRequestJob>, std::shared_ptr<ThreadCollection>, std::function<void(int32_t, const std::string&, const RestCallTagData&, std::shared_ptr<RestRequestJob>)>, std::function<void(bool, bool, int32_t, const std::string&, const RestCallTagData&, std::shared_ptr<RestRequestJob>)>) {
-	printf("RestRequestJob::launchRequest - not implemented\n"); //TODO
+void RestRequestJob::launchRequest(std::shared_ptr<RestRequestJob> a1, std::shared_ptr<ThreadCollection> a2, std::function<void(int32_t, const std::string&, const RestCallTagData&, std::shared_ptr<RestRequestJob>)> a3, std::function<void(bool, bool, int32_t, const std::string&, const RestCallTagData&, std::shared_ptr<RestRequestJob>)> a4) {
+	a1->field_10 = a3;
+	a1->field_20 = a4;
+	Job::addToThreadCollection(a1, *a2.get());
 }
 void RestRequestJob::setBody(const std::string& a2) {
 	this->body = a2;
